@@ -1,0 +1,52 @@
+name: deploy-prod
+
+on:
+  push:
+    branches: 
+      - main
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Use Node.js 13.10
+      uses: actions/setup-node@v1
+      with:
+        node-version: '13.10'
+    - name: Install dependencies.
+      run: |
+        npm install
+
+    - name: Build app.
+      run: |
+        npm run build
+
+    - name: run tests
+      run: |
+        npm test
+      env:
+        CI: true
+
+  clone_and_run:
+
+    runs-on: ubuntu-latest
+    needs: [build-and-test]
+    steps:
+
+    - name: Deploy package to digitalocean
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DO_HOST }}
+        username: root
+        password: ${{ secrets.DO_PASSWORD }}
+        port: 22
+        script: |
+          rm -rf cd /root/workdir/test-devops/ejercicio-test-devops
+          cd /root/workdir/test-devops
+          git clone https://github.com/knowledge1st/ejercicio-test-devops.git
+          cd ejercicio-test-devops
+          docker build -f ./Dockerfile-prod -t test-devops .
+          docker run -dit --restart always --name test-devops -p 80:80 test-devops

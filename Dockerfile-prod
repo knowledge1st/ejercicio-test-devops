@@ -1,0 +1,32 @@
+FROM node:14-alpine as builds
+ENV NODE_ENV builds
+# Add a work directory
+
+WORKDIR /app
+# Cache and Install dependencies
+
+COPY package.json .
+COPY package-lock.json .
+RUN npm install
+
+# Copy app files
+COPY . .
+
+#Build for prod
+RUN npm run build
+
+# Expose port
+EXPOSE 3000
+
+## not in prod builded.
+# Start the app
+# CMD [ "npm", "start" ]
+
+# Pull NGINX image
+FROM nginx:1.15
+
+# Move all build files to NGINX serve folder
+COPY --from=builds /app/build /usr/share/nginx/html
+
+# Setup NGINX with config
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf

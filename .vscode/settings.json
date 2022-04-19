@@ -1,0 +1,10 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#3E1E5A",
+        "titleBar.activeBackground": "#572A7F",
+        "titleBar.activeForeground": "#FCFAFD"
+    },
+    "yaml.schemas": {
+        "https://json.schemastore.org/yamllint.json": "file:///c%3A/Users/Gamer/Desktop/Nacho/Projects/GaliciaCase/testdevops/.github/workflows/deploy.yml"
+    }
+}
